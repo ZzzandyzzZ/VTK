@@ -26,20 +26,22 @@ class MyPared:
         self.velocity = np.array([0, 0, 0])
         self.actor = None
 
+largo = 10000
+ancho = 10000
+alto = 100
+grosor = 30
+radio = 100
+vx=400
+vz=500
+aceleracion = 1
+sphere = MySphere([0,grosor, 0], radio)
+floor = MyFloor([0, 0, 0], alto/3)
+pared = MyPared([0,1,ancho/2], alto)
+pared2 = MyPared([0,1,-ancho/2], alto)
+pared3 = MyPared([largo/2,1,0], alto)
+pared4 = MyPared([-largo/2,1,0], alto)
 
-vx=0.05
-vz=0.01
-sphere = MySphere([0,2, 0], 2)
-floor = MyFloor([0, 0, 0], 1)
-pared = MyPared([0,1,20], 3)
-pared2 = MyPared([0,1,-20], 3)
-pared3 = MyPared([20,1,0], 3)
-pared4 = MyPared([-20,1,0], 3)
-largo = 40
-ancho = 40
 time = 0
-height = abs(floor.pos[1] - sphere.pos[1])
-
 
 def set_initial_position():
     sphere_actor.SetPosition(sphere.pos[0], sphere.pos[1], sphere.pos[2])
@@ -55,27 +57,38 @@ def KeyPress(obj,event):
     global vx,vz,ax,az
     key=obj.GetKeySym()
     if (key=="5"):
-        for i in range(10000):
+        #for i in range(10000):
+        while(True):
+           # print(i)
             sphere.pos[0]+=vx
             sphere.pos[2]+=vz
             sphere_actor.SetPosition(sphere.pos)
             render_window.Render()
             x,y,z=sphere_actor.GetPosition()
-            if vx==0:
+            if vx==0 and vz ==0:
                 break
-            if(x<-largo/2 + 3 or x>largo/2 - 3):
+            print(x,z,vx,vz)
+            if(vx<0):
+                vx+=aceleracion
+            else:
+                vx-=aceleracion
+            if(vz<0):
+                vz+=aceleracion
+            else:
+                vz-=aceleracion
+            if(x<-largo/2 + grosor or x>largo/2 - grosor):
                 if(vx<0):
-                    vx=(vx*-1)-0.005
+                    vx=(vx*-1)-aceleracion
                 else:
-                    vx=(vx*-1)+0.005
+                    vx=(vx*-1)+aceleracion
 
-            if(z<-ancho/2 +  3 or z>ancho/2 - 3):
+            if(z<-ancho/2 +  grosor or z>ancho/2 - grosor):
                 if (vz<0):
-                    vz=(vz*-1)-0.008
+                    vz=(vz*-1)-aceleracion
                 else:
-                    vz=(vz*-1)+0.008
+                    vz=(vz*-1)+aceleracion
                 print("CHOQUE")
-                
+
 
 # def callback_func(caller, timer_event):
 #     global vx,vz,ax,az
@@ -122,33 +135,33 @@ source1.SetRadius(sphere.radius)
 source1.Update()
 
 source2 = vtk.vtkCubeSource()
-source2.SetXLength(40)
+source2.SetXLength(largo)
 source2.SetYLength(floor.height)
-source2.SetZLength(40)
+source2.SetZLength(ancho)
 source2.Update()
 
 source3 = vtk.vtkCubeSource()
-source3.SetXLength(40)
+source3.SetXLength(largo)
 source3.SetYLength(pared.height)
-source3.SetZLength(1)
+source3.SetZLength(alto)
 source3.Update()
 
 source4 = vtk.vtkCubeSource()
-source4.SetXLength(40)
+source4.SetXLength(largo)
 source4.SetYLength(pared2.height)
-source4.SetZLength(1)
+source4.SetZLength(alto)
 source4.Update()
 
 source5 = vtk.vtkCubeSource()
-source5.SetXLength(1)
+source5.SetXLength(alto)
 source5.SetYLength(pared3.height)
-source5.SetZLength(41)
+source5.SetZLength(ancho)
 source5.Update()
 
 source6 = vtk.vtkCubeSource()
-source6.SetXLength(1)
+source6.SetXLength(alto)
 source6.SetYLength(pared4.height)
-source6.SetZLength(41)
+source6.SetZLength(ancho)
 source6.Update()
 
 
@@ -215,7 +228,7 @@ pared4.actor = pared4_actor
 # camera
 camera = vtk.vtkCamera()
 camera.SetFocalPoint(0,0,0)
-camera.SetPosition(100,150,150)
+camera.SetPosition(2*largo,largo,2*ancho)
 
 
 # renderer
