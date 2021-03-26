@@ -31,13 +31,9 @@ vx=0.5
 vz=1
 sphere = MySphere([0,2, 0], 2)
 floor = MyFloor([0, 0, 0], 1)
-
 pared = MyPared([0,1,20], 3)
-
 pared2 = MyPared([0,1,-20], 3)
-
 pared3 = MyPared([20,1,0], 3)
-
 pared4 = MyPared([-20,1,0], 3)
 largo = 40
 ancho = 40
@@ -68,10 +64,10 @@ def callback_func(caller, timer_event):
     sphere_actor.SetPosition(sphere.pos)
     render_window.Render()
     x,y,z=sphere_actor.GetPosition()
-    if(x<-largo/2 or x>largo/2):
+    if(x<-largo/2 + 3 or x>largo/2 - 3):
         vx*=-1
 #        ax*=-1
-    if(z<-ancho/2 or z>ancho/2):
+    if(z<-ancho/2 +  3 or z>ancho/2 - 3):
         vz*=-1
 #        az*=-1
     # global time
