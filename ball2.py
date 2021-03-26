@@ -7,8 +7,8 @@ class MySphere:
     def __init__(self, pos, radius):
         self.pos = pos
         self.radius = radius
-        self.velocity = [10, 0, 0]  # la esfera cae, por eso tiene una velocida hacia abajo
-        self.last_velocity = [0, 0, 0]
+        self.velocity = [0, 10, 0]  # la esfera cae, por eso tiene una velocida hacia abajo
+        self.last_velocity = [0, -10, 0]
         self.actor = None
 
 
@@ -26,22 +26,24 @@ class MyPared:
         self.velocity = np.array([0, 0, 0])
         self.actor = None
 
-largo = 20
-height = 3
-sphere = MySphere([0,0+height, 0], 2)
+
+vx=0.5
+vz=1
+sphere = MySphere([0,2, 0], 2)
 floor = MyFloor([0, 0, 0], 1)
 
 pared = MyPared([0,1,20], 3)
 
 pared2 = MyPared([0,1,-20], 3)
 
-pared3 = MyPared([largo,1,0], 3)
+pared3 = MyPared([20,1,0], 3)
 
-pared4 = MyPared([-largo,1,0], 3)
-
+pared4 = MyPared([-20,1,0], 3)
+largo = 40
+ancho = 40
 time = 0
 g = 9
-
+height = abs(floor.pos[1] - sphere.pos[1])
 
 
 def set_initial_position():
@@ -55,21 +57,41 @@ def set_initial_position():
 
 
 def callback_func(caller, timer_event):
-    global time
-    print("velocity", sphere.velocity, "last velocity", sphere.last_velocity)
-    # print("pos", sphere.pos, "\n")
-
-    sphere.pos[0] = sphere.pos[0] + sphere.velocity[0] * time
-    sphere.last_velocity[0] = sphere.velocity[0]
-    #if(sphere.pos[0] - sphere.radius<-largo/2+height/2):
-        #sphere.velocity[0] = abs(sphere.velocity[0] / 1.3)  # con cada rebote, se libera energia(calor, vibracion, etc) y se pierde velocidad
-    #else:
-    sphere.velocity[0] = sphere.velocity[0] - g * time
-    if(sphere.velocity[0]<0):
-        time =0
-    sphere.actor.SetPosition(sphere.pos)
-    time += 0.001
+    global vx,vz,ax,az
+    sphere.pos[0] += vx
+    sphere.pos[2] += vz
+#    vx+=ax
+#    vz+=az
+#    if(vx<0):vx=0
+#    if(vz<0):vz=0
+    
+    sphere_actor.SetPosition(sphere.pos)
     render_window.Render()
+    x,y,z=sphere_actor.GetPosition()
+    if(x<-largo/2 or x>largo/2):
+        vx*=-1
+#        ax*=-1
+    if(z<-ancho/2 or z>ancho/2):
+        vz*=-1
+#        az*=-1
+    # global time
+    # print("velocity", sphere.velocity, "last velocity", sphere.last_velocity)
+    # # print("pos", sphere.pos, "\n")
+
+    # sphere.pos[0] = sphere.pos[0] + sphere.velocity[0] * time
+    # sphere.last_velocity[0] = sphere.velocity[0]
+    # if (sphere.pos[0] - sphere.radius) < (floor.pos[1] + floor.height / 2):
+    #     sphere.velocity[0] = abs(sphere.velocity[0] / 1.3)  # con cada rebote, se libera energia(calor, vibracion, etc) y se pierde velocidad
+    # else:
+    #     sphere.velocity[0] = sphere.velocity[0] - g * time
+
+    #     if sphere.last_velocity[0] * sphere.velocity[0] < 0:  # si cambio la dirección de la velocidad, cuando empieza a caer
+    #         # print("\nrestart time\n")
+    #         time = 0
+
+    # sphere.actor.SetPosition(sphere.pos[0], sphere.pos[1], sphere.pos[2])
+    # time += 0.001
+    # render_window.Render()
 
 
 # source
