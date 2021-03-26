@@ -35,8 +35,8 @@ pared = MyPared([0,1,20], 3)
 pared2 = MyPared([0,1,-20], 3)
 pared3 = MyPared([20,1,0], 3)
 pared4 = MyPared([-20,1,0], 3)
-largo = 40
-ancho = 40
+largo = 400
+ancho = 400
 time = 0
 height = abs(floor.pos[1] - sphere.pos[1])
 
