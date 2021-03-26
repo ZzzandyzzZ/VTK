@@ -28,7 +28,7 @@ class MyPared:
 
 
 vx=0.5
-vz=1
+vz=0.8
 sphere = MySphere([0,2, 0], 2)
 floor = MyFloor([0, 0, 0], 1)
 pared = MyPared([0,1,20], 3)
