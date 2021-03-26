@@ -27,8 +27,8 @@ class MyPared:
         self.actor = None
 
 
-vx=0.5
-vz=0.8
+vx=0.05
+vz=0.01
 sphere = MySphere([0,2, 0], 2)
 floor = MyFloor([0, 0, 0], 1)
 pared = MyPared([0,1,20], 3)
@@ -38,7 +38,6 @@ pared4 = MyPared([-20,1,0], 3)
 largo = 40
 ancho = 40
 time = 0
-g = 9
 height = abs(floor.pos[1] - sphere.pos[1])
 
 
@@ -52,42 +51,68 @@ def set_initial_position():
     pared4_actor.SetPosition(pared4.pos[0], pared4.pos[1], pared4.pos[2])
 
 
-def callback_func(caller, timer_event):
+def KeyPress(obj,event):
     global vx,vz,ax,az
-    sphere.pos[0] += vx
-    sphere.pos[2] += vz
-#    vx+=ax
-#    vz+=az
-#    if(vx<0):vx=0
-#    if(vz<0):vz=0
+    key=obj.GetKeySym()
+    if (key=="5"):
+        for i in range(10000):
+            sphere.pos[0]+=vx
+            sphere.pos[2]+=vz
+            sphere_actor.SetPosition(sphere.pos)
+            render_window.Render()
+            x,y,z=sphere_actor.GetPosition()
+            if vx==0:
+                break
+            if(x<-largo/2 + 3 or x>largo/2 - 3):
+                if(vx<0):
+                    vx=(vx*-1)-0.005
+                else:
+                    vx=(vx*-1)+0.005
+
+            if(z<-ancho/2 +  3 or z>ancho/2 - 3):
+                if (vz<0):
+                    vz=(vz*-1)-0.008
+                else:
+                    vz=(vz*-1)+0.008
+                print("CHOQUE")
+                
+
+# def callback_func(caller, timer_event):
+#     global vx,vz,ax,az
+#     sphere.pos[0] += vx
+#     sphere.pos[2] += vz
+# #    vx+=ax
+# #    vz+=az
+# #    if(vx<0):vx=0
+# #    if(vz<0):vz=0
     
-    sphere_actor.SetPosition(sphere.pos)
-    render_window.Render()
-    x,y,z=sphere_actor.GetPosition()
-    if(x<-largo/2 + 3 or x>largo/2 - 3):
-        vx*=-1
-#        ax*=-1
-    if(z<-ancho/2 +  3 or z>ancho/2 - 3):
-        vz*=-1
-#        az*=-1
-    # global time
-    # print("velocity", sphere.velocity, "last velocity", sphere.last_velocity)
-    # # print("pos", sphere.pos, "\n")
+#     sphere_actor.SetPosition(sphere.pos)
+#     render_window.Render()
+#     x,y,z=sphere_actor.GetPosition()
+#     if(x<-largo/2 + 3 or x>largo/2 - 3):
+#         vx*=-1
+# #        ax*=-1
+#     if(z<-ancho/2 +  3 or z>ancho/2 - 3):
+#         vz*=-1
+# #        az*=-1
+#     # global time
+#     # print("velocity", sphere.velocity, "last velocity", sphere.last_velocity)
+#     # # print("pos", sphere.pos, "\n")
 
-    # sphere.pos[0] = sphere.pos[0] + sphere.velocity[0] * time
-    # sphere.last_velocity[0] = sphere.velocity[0]
-    # if (sphere.pos[0] - sphere.radius) < (floor.pos[1] + floor.height / 2):
-    #     sphere.velocity[0] = abs(sphere.velocity[0] / 1.3)  # con cada rebote, se libera energia(calor, vibracion, etc) y se pierde velocidad
-    # else:
-    #     sphere.velocity[0] = sphere.velocity[0] - g * time
+#     # sphere.pos[0] = sphere.pos[0] + sphere.velocity[0] * time
+#     # sphere.last_velocity[0] = sphere.velocity[0]
+#     # if (sphere.pos[0] - sphere.radius) < (floor.pos[1] + floor.height / 2):
+#     #     sphere.velocity[0] = abs(sphere.velocity[0] / 1.3)  # con cada rebote, se libera energia(calor, vibracion, etc) y se pierde velocidad
+#     # else:
+#     #     sphere.velocity[0] = sphere.velocity[0] - g * time
 
-    #     if sphere.last_velocity[0] * sphere.velocity[0] < 0:  # si cambio la dirección de la velocidad, cuando empieza a caer
-    #         # print("\nrestart time\n")
-    #         time = 0
+#     #     if sphere.last_velocity[0] * sphere.velocity[0] < 0:  # si cambio la dirección de la velocidad, cuando empieza a caer
+#     #         # print("\nrestart time\n")
+#     #         time = 0
 
-    # sphere.actor.SetPosition(sphere.pos[0], sphere.pos[1], sphere.pos[2])
-    # time += 0.001
-    # render_window.Render()
+#     # sphere.actor.SetPosition(sphere.pos[0], sphere.pos[1], sphere.pos[2])
+#     # time += 0.001
+#     # render_window.Render()
 
 
 # source
@@ -214,6 +239,7 @@ render_window.AddRenderer(renderer)
 # interactor
 interactor = vtk.vtkRenderWindowInteractor()
 interactor.SetRenderWindow(render_window)
+interactor.AddObserver("KeyPressEvent",KeyPress)
 
 # Initialize the interactor and start the rendering loop
 interactor.Initialize()
@@ -222,5 +248,5 @@ render_window.Render()
 set_initial_position()
 
 interactor.CreateRepeatingTimer(1)
-interactor.AddObserver("TimerEvent", callback_func)
+# interactor.AddObserver("TimerEvent", callback_func)
 interactor.Start()
