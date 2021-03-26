@@ -5,42 +5,71 @@ sphere_pos = [0,2,0]
 floor_pos = [0,0,0]
 largo = 40
 ancho = 40
-vx=1
-vz=2
+radio = 2
+velocity_x=0.1
+velocity_z=0.2
+direction_x = 1
+direction_z = 1
 ax =-0.001
 az =-0.001
+time = 0
 def set_initial_position():
     sphere_actor.SetPosition(sphere_pos)
     floor_actor.SetPosition(floor_pos)
 
-def callback_func(caller, timer_event):
-    global vx,vz,ax,az
-    sphere_pos[0] += vx
-    sphere_pos[2] += vz
-#    vx+=ax
-#    vz+=az
-#    if(vx<0):vx=0
-#    if(vz<0):vz=0
-    
-    sphere_actor.SetPosition(sphere_pos)
-    render_window.Render()
+def callback_func2(caller, timer_event):
+    global direction_x,direction_z,ax,az,velocity_x,velocity_z
+
     x,y,z=sphere_actor.GetPosition()
     if(x<-largo/2 or x>largo/2):
-        vx*=-1
-#        ax*=-1
+        direction_x*=-1
     if(z<-ancho/2 or z>ancho/2):
-        vz*=-1
-#        az*=-1
-# source
+        direction_z*=-1
+    vx=max(0,direction_x*velocity_x)
+    vz=max(0,direction_z*velocity_z)
+    velocity_x+=ax
+    velocity_z+=az
+
+    sphere_pos[0] += vx
+    sphere_pos[2] += vz
+    print(vx,vz)
+    sphere_actor.SetPosition(sphere_pos)
+    render_window.Render()
+class MySphere:
+    def __init__(self, pos, radius):
+        self.pos = pos
+        self.radius = radius
+        self.velocity = [0, 10, 0]  # la esfera cae, por eso tiene una velocida hacia abajo
+        self.last_velocity = [0, -10, 0]
+        self.actor = None
+
+def callback_func(caller, timer_event):
+    global time
+    print("velocity", sphere.velocity, "last velocity", sphere.last_velocity)
+    sphere.pos[0] += sphere.velocity[0] * time
+    sphere.last_velocity[0] = sphere.velocity[0]
+    if (sphere.pos[0] - sphere.radius) < (floor.pos[0] + floor.height / 2):
+        sphere.velocity[0] = abs(sphere.velocity[0] / 1.3)  # con cada rebote, se libera energia(calor, vibracion, etc) y se pierde velocidad
+    else:
+        sphere.velocity[0] = sphere.velocity[0] - g * time
+
+        if sphere.last_velocity[0] * sphere.velocity[1] < 0:  # si cambio la dirección de la velocidad, cuando empieza a caer
+            # print("\nrestart time\n")
+            time = 0
+
+    sphere.actor.SetPosition(sphere.pos[0], sphere.pos[1], sphere.pos[2])
+    time += 0.001
+    render_window.Render()
+
 sphere = vtk.vtkSphereSource()
 sphere.SetThetaResolution(50)
-sphere.SetRadius(2)
+sphere.SetRadius(radio)
 sphere.Update()
 
 floor = vtk.vtkCubeSource()
-floor.SetXLength(40)
+floor.SetXLength(largo)
 floor.SetYLength(1)
-floor.SetZLength(40)
+floor.SetZLength(ancho)
 floor.Update()
 
 # mapper
@@ -87,7 +116,7 @@ render_window.Render()
 
 set_initial_position()
 
-interactor.CreateRepeatingTimer(20)
+interactor.CreateRepeatingTimer(1)
 interactor.AddObserver("TimerEvent", callback_func)
 interactor.Start()
 
