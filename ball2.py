@@ -181,6 +181,16 @@ pared4_mapper.SetInputData(source6.GetOutput())
 
 
 # actor
+
+txt=vtk.vtkTextActor()
+txt.SetInput("Presiona la letra 5 para darle fuerza a la pelota")
+txtprop=txt.GetTextProperty()
+txtprop.SetFontFamilyToArial()
+txtprop.SetFontSize(18)
+txtprop.SetColor(10,0,1)
+txt.SetDisplayPosition(200,700)
+
+
 sphere_actor = vtk.vtkActor()
 sphere_actor.SetMapper(sphere_mapper)
 sphere_actor.GetProperty().SetColor(0, 1, 0.0)
@@ -234,6 +244,7 @@ renderer.AddActor(pared_actor)
 renderer.AddActor(pared2_actor)
 renderer.AddActor(pared3_actor)
 renderer.AddActor(pared4_actor)
+renderer.AddActor(txt)
 
 renderer.SetActiveCamera(camera)
 
